@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import * as nodemailer from 'nodemailer'
-import * as PDFDocument from 'pdfkit'
+import PDFDocument from 'pdfkit';
 import * as QRCode from 'qrcode'
 import { PrismaService } from '../prisma/prisma.service'
 
@@ -170,7 +170,10 @@ export class TicketDeliveryService {
       margin: 1,
       width: 240,
     })
-    const document = new PDFDocument({ size: 'A5', margin: 40 })
+    const document = new PDFDocument({
+  size: 'A4',
+  margin: 40,
+});
     const chunks: Buffer[] = []
     const completed = new Promise<Buffer>((resolve, reject) => {
       document.on('data', (chunk: Buffer) => chunks.push(chunk))
