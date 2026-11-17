@@ -9,10 +9,9 @@ WORKDIR /app
 RUN corepack enable && corepack prepare yarn@1.22.22 --activate
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_API_URL=http://localhost:6001/api
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN yarn build
+RUN yarn build \
+    && rm -f .env .next/standalone/.env .next/standalone/.env.*
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app

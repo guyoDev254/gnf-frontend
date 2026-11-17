@@ -29,7 +29,7 @@ The repository root `Dockerfile` builds the Next.js frontend as `northern-kenya-
 3. Apply database migrations with `docker compose --profile tools run --rm migrate` before serving traffic.
 4. Open the frontend at `http://localhost:3000` and API docs at `http://localhost:6001/api/docs`.
 
-The browser-facing API URL is baked into the frontend image at build time. Override it with `NEXT_PUBLIC_API_URL`, for example `NEXT_PUBLIC_API_URL=https://api.example.com/api docker compose build frontend`. In production, set `FRONTEND_URL` and `PUBLIC_API_URL` in `backend/.env` to the public HTTPS origins. Never add `.env` files or secrets to either image.
+The browser-facing API URL is baked into the frontend image at build time from the root `.env` file. Set `NEXT_PUBLIC_API_URL=/api` there; Next.js proxies `/api/*` requests to the `backend` Compose service so browser requests remain same-origin. For production, set `FRONTEND_URL` in `backend/.env` to the frontend origin(s), comma-separated (for example `https://gnf.northernbox.org`), and set `PUBLIC_API_URL` to the public API base URL (for example `https://gnf.northernbox.org/api`). Keep only the public API URL in the root `.env`; do not put secrets there. The Docker build removes the root `.env` from the generated standalone output.
 
 ## Endpoints
 
