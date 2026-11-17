@@ -1,0 +1,44 @@
+services:
+  frontend:
+    image: northern-kenya-festival-frontend:latest
+    platform: linux/amd64
+    build:
+      platforms:
+        - linux/amd64
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:6001/api}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+
+  backend:
+    image: northern-kenya-festival-backend:latest
+    platform: linux/amd64
+    build:
+      platforms:
+        - linux/amd64
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runner
+    env_file:
+      - ./backend/.env
+    ports:
+      - "6001:6001"
+
+  migrate:
+    image: northern-kenya-festival-backend-migrate:latest
+    platform: linux/amd64
+    profiles:
+      - tools
+    build:
+      platforms:
+        - linux/amd64
+      context: ./backend
+      dockerfile: Dockerfile
+      target: migrator
+    env_file:
+      - ./backend/.env

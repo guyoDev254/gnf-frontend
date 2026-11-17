@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model TicketType {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  detail    String
+  priceMinor Int
+  active    Boolean       @default(true)
+  capacity Int?
+  slotsAvailable Int?
+  slotsReserved Int       @default(0)
+  slotsSold Int           @default(0)
+  orders    TicketOrder[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model TicketOrder {
+  id                   String      @id @default(cuid())
+  reference            String      @unique
+  buyerName            String
+  email                String
+  phone                String
+  county               String
+  quantity             Int
+  unitPriceMinor       Int
+  amountMinor          Int
+  currency             String      @default("KES")
+  status               OrderStatus @default(PENDING)
+  authorizationUrl     String?
+  accessCode           String?
+  gatewayTransactionId String?
+  paidAt               DateTime?
+  ticketEmailSentAt    DateTime?
+  ticketEmailSendingAt DateTime?
+  expiresAt            DateTime?
+  reservationReleasedAt DateTime?
+  ticketTypeId         String
+  ticketType           TicketType  @relation(fields: [ticketTypeId], references: [id])
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@index([email, createdAt])
+  @@index([status, expiresAt])
+}
